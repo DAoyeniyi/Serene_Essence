@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ product.name }} | Serene Essence</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #faf8f3;
+            color: #263b2e;
+        }
+
+        header {
+            background: white;
+            padding: 22px 8%;
+            border-bottom: 1px solid #e5e2d8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header a {
+            color: #385746;
+            text-decoration: none;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        nav a {
+            margin-left: 20px;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 50px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 45px;
+        }
+
+        .product-image {
+            background: white;
+            min-height: 350px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .product-image img {
+            max-width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+        }
+
+        .placeholder {
+            font-size: 100px;
+        }
+
+        .product-info h1 {
+            font-size: 34px;
+            margin-top: 10px;
+        }
+
+        .category {
+            color: #68756b;
+            text-transform: capitalize;
+        }
+
+        .price {
+            font-size: 27px;
+            font-weight: bold;
+            color: #385746;
+            margin: 25px 0;
+        }
+
+        .description {
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        .stock {
+            margin-bottom: 25px;
+        }
+
+        .quantity-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .quantity-input {
+            display: block;
+            width: 100%;
+            max-width: 150px;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #cbd4ca;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .button {
+            display: inline-block;
+            background: #385746;
+            color: white;
+            padding: 14px 25px;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background: #263b2e;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #385746;
+            margin-top: 25px;
+        }
+
+        .cart-link {
+            color: #385746;
+            text-decoration: none;
+        }
+
+        @media (max-width: 700px) {
+            header {
+                flex-direction: column;
+                gap: 18px;
+            }
+
+            nav a {
+                margin: 0 8px;
+            }
+
+            main {
+                grid-template-columns: 1fr;
+                margin: 20px auto;
+            }
+
+            .product-info h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="/">SERENE ESSENCE</a>
+
+        <nav>
+            <a href="/">Home</a>
+            <a href="{% url 'cart_detail' %}" class="cart-link">
+                Shopping Cart
+            </a>
+        </nav>
+    </header>
+
+    <main>
+
+        <div class="product-image">
+
+            {% if product.image %}
+                <img
+                    src="{{ product.image.url }}"
+                    alt="{{ product.name }}"
+                >
+            {% else %}
+                <div class="placeholder">🧴</div>
+            {% endif %}
+
+        </div>
+
+        <div class="product-info">
+
+            <p class="category">
+                {{ product.get_category_display }}
+            </p>
+
+            <h1>{{ product.name }}</h1>
+
+            <p class="price">
+                ₦{{ product.price|floatformat:2 }}
+            </p>
+
+            <div class="description">
+                {{ product.description|linebreaks }}
+            </div>
+
+            <p class="stock">
+
+                {% if product.stock > 0 %}
+                    In stock: {{ product.stock }}
+                {% else %}
+                    Currently out of stock
+                {% endif %}
+
+            </p>
+
+            {% if product.stock > 0 %}
+
+                <form
+                    method="post"
+                    action="{% url 'add_to_cart' product.id %}"
+                >
+
+                    {% csrf_token %}
+
+                    <label
+                        for="quantity"
+                        class="quantity-label"
+                    >
+                        Select Quantity:
+                    </label>
+
+                    <input
+                        type="number"
+                        name="quantity"
+                        id="quantity"
+                        class="quantity-input"
+                        value="1"
+                        min="1"
+                        max="{{ product.stock }}"
+                        required
+                    >
+
+                    <button type="submit" class="button">
+                        Add to Cart
+                    </button>
+
+                </form>
+
+            {% else %}
+
+                <p>
+                    This product is currently unavailable.
+                    Please check back later.
+                </p>
+
+            {% endif %}
+
+            <a href="/" class="back-link">
+                ← Back to the collection
+            </a>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

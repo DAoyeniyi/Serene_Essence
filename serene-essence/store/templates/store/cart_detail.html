@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Your Cart | Serene Essence</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #faf8f3;
+            color: #263b2e;
+        }
+
+        header {
+            background: white;
+            padding: 22px 8%;
+            border-bottom: 1px solid #e5e2d8;
+        }
+
+        header a {
+            color: #385746;
+            text-decoration: none;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 45px auto;
+            padding: 20px;
+        }
+
+        .cart-item {
+            background: white;
+            padding: 22px;
+            margin: 15px 0;
+            border: 1px solid #e5e2d8;
+            border-radius: 6px;
+        }
+
+        .price {
+            color: #385746;
+            font-weight: bold;
+        }
+
+        button {
+            background: #385746;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .remove-button {
+            background: #8b3f3f;
+        }
+
+        .error {
+            color: #8b3f3f;
+        }
+
+        .links {
+            margin-top: 25px;
+        }
+
+        .links a {
+            color: #385746;
+            margin-right: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="/">SERENE ESSENCE</a>
+    </header>
+
+    <main>
+
+        <h1>Your Shopping Cart</h1>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        {% for item in cart %}
+
+            <div class="cart-item">
+
+                <h3>{{ item.product.name }}</h3>
+
+                <p>
+                    Price per item:
+                    <span class="price">
+                        ₦{{ item.price|floatformat:2 }}
+                    </span>
+                </p>
+
+                <p>Quantity: {{ item.quantity }}</p>
+
+                <p>
+                    Subtotal:
+                    <span class="price">
+                        ₦{{ item.total_price|floatformat:2 }}
+                    </span>
+                </p>
+
+                <form
+                    method="post"
+                    action="{% url 'remove_from_cart' item.product.id %}"
+                >
+                    {% csrf_token %}
+                    <button class="remove-button" type="submit">
+                        Remove
+                    </button>
+                </form>
+
+            </div>
+
+        {% empty %}
+
+            <p>Your shopping cart is empty.</p>
+
+        {% endfor %}
+
+        {% if cart|length > 0 %}
+
+            <h2>
+                Total:
+                ₦{{ cart.get_total_price|floatformat:2 }}
+            </h2>
+
+        {% endif %}
+
+        <div class="links">
+            <a href="/">Continue shopping</a>
+        </div>
+
+    </main>
+
+</body>
+</html>
